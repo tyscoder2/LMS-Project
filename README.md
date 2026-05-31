@@ -1,4 +1,4 @@
-# Library Management System (WIP, raw code)
+# Library Management System (WIP, source code)
 
 An application development project for Marinduque Midwest College.
 
@@ -28,7 +28,8 @@ Before running this code, ensure you have the following installed:
 * Start the **MySQL** module.
 
 ### 4. Database setup
-* The database is defined as follows in dbcmds.txt. More details in upcoming documentation.
+* The database is defined as follows in dbcmds.txt. MTBA
 
 ### 5. Run "localhost/lms-project/public" in browser
-MTBD
+
+More details in upcoming documentation.
