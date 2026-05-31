@@ -11,7 +11,7 @@ Before running this code, ensure you have the following installed:
 * **XAMPP** (with Apache and MySQL modules)
 * **A modern web browser**
 
---
+---
 
 ## Setup
 ### 1. Download the source code
