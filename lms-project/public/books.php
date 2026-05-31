@@ -141,7 +141,7 @@ try {
     }
 
     /* ==========================================================================
-       POST HANDLER: INLINE UPDATE SAVE ENGINE
+       POST HANDLER: INLINE UPDATE SAVE ENGINE (WITH COVER UPLOAD CAPABILITY)
        ========================================================================== */
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_edit_book'])) {
         $edit_id     = (int)($_POST['book_id'] ?? 0);
@@ -165,15 +165,62 @@ try {
                 $category_id = $pdo->lastInsertId();
             }
 
-            $update_stmt = $pdo->prepare("UPDATE books SET title = :title, author = :author, isbn = :isbn, category_id = :category_id, copies = :copies WHERE id = :id");
-            $update_stmt->execute([
-                'title'       => $edit_title,
-                'author'      => $edit_author,
-                'isbn'        => $edit_isbn,
-                'category_id' => $category_id,
-                'copies'      => $edit_copies,
-                'id'          => $edit_id
-            ]);
+            // Inline File Image Upload Processing Core Flow
+            $updated_cover_path = null;
+            if (isset($_FILES['edit_book_cover']) && $_FILES['edit_book_cover']['error'] === UPLOAD_ERR_OK) {
+                $file_tmp     = $_FILES['edit_book_cover']['tmp_name'];
+                $file_orig    = $_FILES['edit_book_cover']['name'];
+                $file_ext     = strtolower(pathinfo($file_orig, PATHINFO_EXTENSION));
+                $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+                if (in_array($file_ext, $allowed_exts)) {
+                    $target_upload_dir = 'books/thumbs/';
+                    if (!is_dir($target_upload_dir)) {
+                        mkdir($target_upload_dir, 0755, true);
+                    }
+                    $new_cover_name = "book_" . time() . "_" . uniqid() . "." . $file_ext;
+                    $dest_file_path = $target_upload_dir . $new_cover_name;
+
+                    if (move_uploaded_file($file_tmp, $dest_file_path)) {
+                        $updated_cover_path = $dest_file_path;
+
+                        // Fetch old file pointer asset to purge storage disk leaks
+                        $old_img_stmt = $pdo->prepare("SELECT cover_image FROM books WHERE id = :id");
+                        $old_img_stmt->execute(['id' => $edit_id]);
+                        $old_img_file = $old_img_stmt->fetchColumn();
+                        if (!empty($old_img_file) && file_exists($old_img_file)) {
+                            @unlink($old_img_file);
+                        }
+                    }
+                }
+            }
+
+            // Construct SQL statement string based on asset presence vector criteria logic
+            if ($updated_cover_path !== null) {
+                $update_sql = "UPDATE books SET title = :title, author = :author, isbn = :isbn, category_id = :category_id, copies = :copies, cover_image = :cover WHERE id = :id";
+                $bind_params = [
+                    'title'       => $edit_title,
+                    'author'      => $edit_author,
+                    'isbn'        => $edit_isbn,
+                    'category_id' => $category_id,
+                    'copies'      => $edit_copies,
+                    'cover'       => $updated_cover_path,
+                    'id'          => $edit_id
+                ];
+            } else {
+                $update_sql = "UPDATE books SET title = :title, author = :author, isbn = :isbn, category_id = :category_id, copies = :copies WHERE id = :id";
+                $bind_params = [
+                    'title'       => $edit_title,
+                    'author'      => $edit_author,
+                    'isbn'        => $edit_isbn,
+                    'category_id' => $category_id,
+                    'copies'      => $edit_copies,
+                    'id'          => $edit_id
+                ];
+            }
+
+            $update_stmt = $pdo->prepare($update_sql);
+            $update_stmt->execute($bind_params);
             $success_msg = "Changes preserved cleanly to database matrix infrastructure.";
 
             // Re-fetch category reference collection in case a missing option auto-seeded
@@ -189,6 +236,14 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_delete_book'])) {
         $delete_id = (int)($_POST['book_id'] ?? 0);
         if ($delete_id > 0) {
+            // Optional: Fetch image file location to unlink before record deletion
+            $img_stmt = $pdo->prepare("SELECT cover_image FROM books WHERE id = :id");
+            $img_stmt->execute(['id' => $delete_id]);
+            $cover_file = $img_stmt->fetchColumn();
+            if (!empty($cover_file) && file_exists($cover_file)) {
+                @unlink($cover_file);
+            }
+
             $delete_stmt = $pdo->prepare("DELETE FROM books WHERE id = :id");
             $delete_stmt->execute(['id' => $delete_id]);
             $success_msg = "Catalog structural target item dropped from infrastructure memory.";
@@ -249,6 +304,20 @@ try {
     .hidden-state { display: none !important; }
     .inline-edit-input { width: 100%; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; margin: 2px 0; }
     .metadata-action-box-right { display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+    .book-cover-frame-yellowish { position: relative; overflow: hidden; }
+    .inline-cover-modifier-label {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        background: rgba(15, 23, 42, 0.85);
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+        padding: 6px 0;
+        cursor: pointer;
+        transition: background 0.15s ease;
+    }
+    .inline-cover-modifier-label:hover { background: rgba(231, 76, 60, 0.95); }
 </style>
 
 <main class="content-container books-canvas">
@@ -271,7 +340,7 @@ try {
                         <select name="sort" onchange="this.form.submit()" class="native-refinement-select">
                             <option value="newest" <?php echo $sort_selection === 'newest' ? 'selected' : ''; ?>>Sort by: Newest</option>
                             <option value="oldest" <?php echo $sort_selection === 'oldest' ? 'selected' : ''; ?>>Sort by: Oldest</option>
-                            <option value="name" <?php echo $sort_selection === 'name' ? 'selected' : ''; ?>>Sort by: By name</option>
+                            <option value="name" <?php echo $sort_selection === 'name' ? 'selected' : ''; ?>>Sort by: By title</option>
                         </select>
                     </div>
                     <div class="select-facade-container dropdown-limit">
@@ -331,15 +400,19 @@ try {
             <?php if (!empty($registered_books_collection)): ?>
                 <?php foreach ($registered_books_collection as $book_row_data): ?>
 
-                    <form action="books.php" method="POST" class="book-material-card-wrapper">
+                    <form action="books.php" method="POST" enctype="multipart/form-data" class="book-material-card-wrapper">
                         <input type="hidden" name="book_id" value="<?php echo $book_row_data['id']; ?>">
 
                         <div class="book-cover-frame-yellowish flex-shrink-0">
                             <?php if (!empty($book_row_data['cover_image'])): ?>
-                                <img src="<?php echo htmlspecialchars($book_row_data['cover_image']); ?>" alt="Material cover" class="fluid-cover-preview-img">
+                                <img src="<?php echo htmlspecialchars($book_row_data['cover_image']); ?>" alt="Material cover" class="fluid-cover-preview-img" id="cover-view-node-<?php echo $book_row_data['id']; ?>">
                             <?php else: ?>
-                                <div class="inner-book-vector"><div class="vector-circle"></div><div class="vector-divider"></div></div>
+                                <div class="inner-book-vector" id="vector-view-node-<?php echo $book_row_data['id']; ?>"><div class="vector-circle"></div><div class="vector-divider"></div></div>
+                                <img src="" alt="Material cover" class="fluid-cover-preview-img hidden-state" id="cover-view-node-<?php echo $book_row_data['id']; ?>">
                             <?php endif; ?>
+
+                            <label for="inline-file-<?php echo $book_row_data['id']; ?>" class="inline-cover-modifier-label input-edit-state hidden-state">Change Image</label>
+                            <input type="file" name="edit_book_cover" id="inline-file-<?php echo $book_row_data['id']; ?>" accept="image/*" class="hidden-state" onchange="previewInlineBookCover(this, <?php echo $book_row_data['id']; ?>)">
                         </div>
 
                         <div class="book-metadata-lavender-block">
@@ -401,6 +474,25 @@ function enableInlineEditMode(buttonElement) {
     rootCardForm.querySelectorAll('.input-edit-state').forEach(element => element.classList.remove('hidden-state'));
     buttonElement.classList.add('hidden-state');
     rootCardForm.querySelector('.btn-trigger-save').classList.remove('hidden-state');
+}
+
+// UPDATED: HANDLES REAL-TIME THUMBNAIL LIVE PREVIEWS FOR INLINE MATERIAL CARD EDITS
+function previewInlineBookCover(fileNodeInput, bookId) {
+    if (fileNodeInput.files && fileNodeInput.files[0]) {
+        const imageStreamReader = new FileReader();
+        imageStreamReader.onload = function (eventObj) {
+            const visualImgNode = document.getElementById('cover-view-node-' + bookId);
+            const vectorArtBlueprint = document.getElementById('vector-view-node-' + bookId);
+
+            visualImgNode.src = eventObj.target.result;
+            visualImgNode.classList.remove('hidden-state');
+
+            if (vectorArtBlueprint) {
+                vectorArtBlueprint.style.display = 'none';
+            }
+        };
+        imageStreamReader.readAsDataURL(fileNodeInput.files[0]);
+    }
 }
 
 function previewBookCoverFile(fileNodeInput) {

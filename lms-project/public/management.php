@@ -59,11 +59,11 @@ include_once 'includes/header.php';
 
                 <a href="reservations.php" class="manage-dashboard-card card-red">
                     <div class="card-vector-space">
-                        <div class="icon-reservations-paper">
-                            <div class="paper-line short"></div>
-                            <div class="paper-line wide"></div>
-                            <div class="paper-line wide"></div>
-                            <div class="paper-line mid"></div>
+                        <div class="icon-reservations-ticket">
+                            <div class="ticket-body">
+                                <div class="ticket-line short"></div>
+                                <div class="ticket-line mid"></div>
+                            </div>
                         </div>
                     </div>
                     <span class="manage-card-label">RESERVATIONS</span>
@@ -96,14 +96,14 @@ include_once 'includes/header.php';
                 <h2 class="manage-section-subtitle">ADMINISTRATIVE MANAGEMENT</h2>
                 <div class="manage-cards-row">
 
-                    <a href="users.php" class="manage-dashboard-card card-green">
+                    <a href="users.php" class="manage-dashboard-card card-green" style="position: relative;">
                         <div class="card-vector-space">
                             <div class="profile-avatar-fallback">
                                 <div class="fallback-vector-head"></div>
                                 <div class="fallback-vector-torso"></div>
                             </div>
                         </div>
-                        <span class="manage-card-label">USERS</span>
+                        <span class="manage-card-label" style="position: absolute; z-index: 10; bottom: 15px; left: 15px;">USERS</span>
                     </a>
 
                 </div>

@@ -5181,3 +5181,45 @@ button[name="action_delete_book"]:active {
         width: 100%;
     }
 }
+
+
+
+/* 5. Reservations Ticket Icon Vector */
+.icon-reservations-ticket {
+    width: 130px;
+    height: 75px;
+    border: 4px solid #ffffff;
+    border-radius: 2px;
+    box-sizing: border-box;
+    padding: 16px 14px;
+    display: flex;
+    prevents-collapse: true;
+}
+
+.ticket-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+}
+
+.ticket-line {
+    height: 4px;
+    background-color: #ffffff;
+    border-radius: 1px;
+}
+
+.ticket-line.short {
+    width: 45%;
+}
+
+.ticket-line.mid {
+    width: 70%;
+}
+
+/* Ensure global structural context for internal labels */
+.manage-dashboard-card {
+    position: relative;
+    overflow: hidden;
+}

@@ -245,9 +245,9 @@ if ($pdo !== null) {
                 <div class="search-refinement-horizontal-strip">
                     <div class="sort-dropdown-facade">
                         <select name="sort" onchange="this.form.submit()">
-                            <option value="newest" <?php echo $sort_selection === 'newest' ? 'selected' : ''; ?>>Sort by</option>
+                            <option value="newest" <?php echo $sort_selection === 'newest' ? 'selected' : ''; ?>>Sort by: Newest</option>
                             <option value="oldest" <?php echo $sort_selection === 'oldest' ? 'selected' : ''; ?>>Sort by: Oldest</option>
-                            <option value="name" <?php echo $sort_selection === 'name' ? 'selected' : ''; ?>>Sort by: By name</option>
+                            <option value="name" <?php echo $sort_selection === 'name' ? 'selected' : ''; ?>>Sort by: By title</option>
                         </select>
                     </div>
 
@@ -305,7 +305,7 @@ if ($pdo !== null) {
                                 <p><strong>ISBN:</strong> <?php echo htmlspecialchars(!empty($book['isbn']) ? $book['isbn'] : 'N/A'); ?></p>
                                 <p><strong>Category:</strong> <?php echo htmlspecialchars($book['category_name'] ?? 'Education'); ?></p>
                                 <p><strong>Copies:</strong> <?php echo ($book['copies'] > 0) ? htmlspecialchars($book['copies']) : 'On loan'; ?></p>
-                                <p><strong>Added:</strong> <?php echo isset($book['created_at']) ? date("Y-m-d", strtotime($book['created_at'])) : 'Date added'; ?></p>
+                                <p><strong> </strong></p>
                             </div>
 
                             <div>

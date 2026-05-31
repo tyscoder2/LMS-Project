@@ -47,13 +47,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_login'])) {
             $stmt->execute(['username' => $username]);
             $user_account = $stmt->fetch();
 
-            // Strict evaluation comparing form submission against schema password_hash
-            if ($user_account && password_verify($password, $user_account['password_hash'])) {
+            // Strict evaluation: verify password hash AND ensure username matches case-sensitively (===)
+            if ($user_account && $user_account['username'] === $username && password_verify($password, $user_account['password_hash'])) {
 
                 // Populate secure session storage state arrays
                 $_SESSION['user_id']       = $user_account['id'];
-                $_SESSION['username']     = $user_account['username'];
-                $_SESSION['role']         = strtolower($user_account['role'] ?? 'student');
+                $_SESSION['username']      = $user_account['username'];
+                $_SESSION['role']          = strtolower($user_account['role'] ?? 'student');
 
                 // Cache relational student metrics if they exist in the borrowers ledger
                 $_SESSION['borrower_id']   = $user_account['borrower_id'] ?? null;

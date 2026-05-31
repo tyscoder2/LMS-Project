@@ -13,7 +13,7 @@
 
             <div class="footer-links-right">
                 <a href="<?php echo isset($base_url) ? $base_url : ''; ?>/lrc.php">MMC-LRC</a>
-                <a href="https://facebook.com" target="_blank" rel="noreferrer">Facebook</a>
+                <a href="https://www.facebook.com/marinduquemidwest/" target="_blank" rel="noreferrer">Facebook</a>
             </div>
         </div>
         <div class="footer-bottom-row">

@@ -19,7 +19,7 @@ $error_msg = "";
 
 // Database configuration settings
 $host = 'localhost';
-$db   = 'lms_project'; // Corrected database context
+$db   = 'lms_project';
 $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
@@ -51,12 +51,13 @@ try {
         POST REQUEST PROCESSOR (MANAGES RE-ROUTING AND UPDATES)
        ========================================================================== */
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $input_username = trim($_POST['username'] ?? '');
-        $input_email    = trim($_POST['email'] ?? '');
-        $input_course   = trim($_POST['course'] ?? '');
-        $input_contact  = trim($_POST['contact'] ?? '');
+        $input_username   = trim($_POST['username'] ?? '');
+        $input_email      = trim($_POST['email'] ?? '');
+        $input_student_id = trim($_POST['student_id'] ?? '');
+        $input_course     = trim($_POST['course'] ?? '');
+        $input_contact    = trim($_POST['contact'] ?? '');
 
-        // 1. Handle Multipart Profile Image Upload (Using Session persistence due to schema constraints)
+        // 1. Handle Multipart Profile Image Upload
         if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] === UPLOAD_ERR_OK) {
             $file_tmp_path = $_FILES['profile_pic']['tmp_name'];
             $file_name     = $_FILES['profile_pic']['name'];
@@ -73,12 +74,12 @@ try {
                 $dest_path = $upload_dir . $new_file_name;
 
                 if (move_uploaded_file($file_tmp_path, $dest_path)) {
-                    $_SESSION['profile_pic'] = $dest_path; // Saved to session since 'profile_pic' column doesn't exist
+                    $_SESSION['profile_pic'] = $dest_path;
                 }
             }
         }
 
-        // 2. Uniqueness Validation Check (Prevent colliding with existing accounts)
+        // 2. Uniqueness Validation Check (Core User Account Credentials)
         $dup_stmt = $pdo->prepare("SELECT id FROM users WHERE (username = :username OR email = :email) AND id != :id LIMIT 1");
         $dup_stmt->execute([
             'username' => $input_username,
@@ -86,10 +87,25 @@ try {
             'id'       => $current_user_id
         ]);
 
+        // 3. Uniqueness Validation Check (Student Alphanumeric ID)
+        $dup_student = false;
+        if ($user_data['role'] === 'student' && !empty($input_student_id)) {
+            $stud_stmt = $pdo->prepare("SELECT id FROM borrowers WHERE student_id = :student_id AND user_id != :id LIMIT 1");
+            $stud_stmt->execute([
+                'student_id' => $input_student_id,
+                'id'         => $current_user_id
+            ]);
+            if ($stud_stmt->fetch()) {
+                $dup_student = true;
+            }
+        }
+
         if ($dup_stmt->fetch()) {
             $error_msg = "Username or Email address is already taken by another account.";
+        } elseif ($dup_student) {
+            $error_msg = "The specified Student ID is already assigned to another student.";
         } else {
-            // 3. Execute Multi-Table Safe Transaction Pipeline
+            // 4. Execute Multi-Table Safe Transaction Pipeline
             $pdo->beginTransaction();
 
             // Update core identity parameters inside USERS table
@@ -100,13 +116,14 @@ try {
                 'id'       => $current_user_id
             ]);
 
-            // Update profile information inside BORROWERS table if user is a student
+            // Update profile information inside BORROWERS table (Including editable Student ID)
             if ($user_data['role'] === 'student') {
-                $borr_up = $pdo->prepare("UPDATE borrowers SET course = :course, contact = :contact WHERE user_id = :id");
+                $borr_up = $pdo->prepare("UPDATE borrowers SET student_id = :student_id, course = :course, contact = :contact WHERE user_id = :id");
                 $borr_up->execute([
-                    'course'   => $input_course,
-                    'contact'  => $input_contact,
-                    'id'       => $current_user_id
+                    'student_id' => $input_student_id,
+                    'course'     => $input_course,
+                    'contact'    => $input_contact,
+                    'id'         => $current_user_id
                 ]);
             }
 
@@ -129,7 +146,7 @@ try {
 $display_name   = $user_data['full_name'] ?? ucfirst($user_data['username']);
 $display_role   = $user_data['role'] ?? "student";
 $display_joined = isset($user_data['created_at']) ? date('m/d/Y', strtotime($user_data['created_at'])) : "MM/DD/YYYY";
-$display_id     = ($user_data['role'] === 'student') ? ($user_data['student_id'] ?? 'N/A') : "Staff Acc #" . $user_data['id'];
+$display_id     = ($user_data['role'] === 'student') ? $user_data['id'] : "Staff Acc #" . $user_data['id'];
 $profile_pic    = $_SESSION['profile_pic'] ?? null;
 ?>
 
@@ -198,6 +215,14 @@ $profile_pic    = $_SESSION['profile_pic'] ?? null;
                             <span class="matrix-key">ID Number:</span>
                             <span class="matrix-val static-text-node"><?php echo htmlspecialchars($display_id); ?></span>
                         </div>
+
+                        <?php if ($display_role === 'student'): ?>
+                            <div class="matrix-row">
+                                <label for="input-student-id" class="matrix-key">Student ID:</label>
+                                <input type="text" name="student_id" id="input-student-id" class="settings-interactive-input"
+                                       value="<?php echo htmlspecialchars($user_data['student_id'] ?? ''); ?>" required>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="matrix-row">
                             <label for="input-email" class="matrix-key">Email:</label>

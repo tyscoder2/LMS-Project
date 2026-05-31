@@ -24,11 +24,12 @@ $user_profile = [
     'role'             => $_SESSION['role'] ?? "student",
     'joined_date'      => "N/A",
     'username'         => $_SESSION['username'] ?? "username",
-    'id_number'        => "N/A", // Will display Student ID for students, User ID for staff
+    'id_number'        => "N/A", // Internal Account User ID (e.g., 1)
+    'student_id'       => "N/A", // School-issued Student ID (e.g., SID001)
     'email'            => "N/A",
     'course'           => "N/A",
     'contact'          => "N/A",
-    'profile_picture'  => null, // Kept for UI asset fallback handling
+    'profile_picture'  => null,  // Kept for UI asset fallback handling
     'total_txns'       => 0,
     'times_fined'      => 0,
     'total_fines_paid' => "PHP 0.00"
@@ -36,7 +37,7 @@ $user_profile = [
 
 // Execute actual database queries using PDO
 $host = 'localhost';
-$db   = 'lms_project'; // Corrected database context
+$db   = 'lms_project';
 $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
@@ -64,13 +65,14 @@ try {
         $user_profile['role']        = $db_user['role'];
         $user_profile['email']       = $db_user['email'];
         $user_profile['joined_date'] = date('m/d/Y', strtotime($db_user['created_at']));
+        $user_profile['id_number']   = $db_user['user_id']; // Populates raw User ID matching visual mockup
 
         // Differentiate formatting logic for Students vs Management Staff
         if (!empty($db_user['borrower_id'])) {
-            $user_profile['name']      = $db_user['borrower_name'];
-            $user_profile['id_number'] = $db_user['student_id']; // Displays school issued Student ID
-            $user_profile['course']    = $db_user['course'] ?: "N/A";
-            $user_profile['contact']   = $db_user['contact'] ?: "N/A";
+            $user_profile['name']       = $db_user['borrower_name'];
+            $user_profile['student_id'] = $db_user['student_id']; // Displays school-issued Student ID string
+            $user_profile['course']     = $db_user['course'] ?: "N/A";
+            $user_profile['contact']    = $db_user['contact'] ?: "N/A";
 
             $borrower_id = $db_user['borrower_id'];
 
@@ -95,10 +97,10 @@ try {
                 $user_profile['total_fines_paid'] = "PHP " . number_format((float)($fine_data['total_paid'] ?? 0.00), 2);
             }
         } else {
-            // Admin/Librarian fallback styling assignments
-            $user_profile['name']      = ucfirst($db_user['username']);
-            $user_profile['id_number'] = "Staff Acc #" . $db_user['user_id'];
-            $user_profile['course']    = "Management Matrix";
+            // Admin/Librarian assignments fallback
+            $user_profile['name']       = ucfirst($db_user['username']);
+            $user_profile['student_id'] = "N/A"; // Management accounts do not have a borrower record
+            $user_profile['course']     = "Management Matrix";
         }
     }
 } catch (\PDOException $e) {
@@ -147,6 +149,10 @@ try {
                     <div class="matrix-row">
                         <span class="matrix-key">ID Number:</span>
                         <span class="matrix-val"><?php echo htmlspecialchars($user_profile['id_number']); ?></span>
+                    </div>
+                    <div class="matrix-row">
+                        <span class="matrix-key">Student ID:</span>
+                        <span class="matrix-val"><?php echo htmlspecialchars($user_profile['student_id']); ?></span>
                     </div>
                     <div class="matrix-row">
                         <span class="matrix-key">Email:</span>

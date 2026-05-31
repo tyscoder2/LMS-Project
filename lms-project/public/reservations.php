@@ -157,7 +157,7 @@ try {
 <main class="content-container reservations-canvas">
     <div class="reservations-inner-wrapper">
 
-        <h1 class="res-main-title text-center">RESERVATION RECORDS</h1>
+        <h1 class="res-main-title text-center">RESERVATIONS</h1>
 
         <p class="res-subtitle-notice text-center">
             <?php echo $is_staff ? "Enter a reservation ID, book title, or username." : "Search by reservation ID or book title."; ?>

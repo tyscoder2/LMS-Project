@@ -225,7 +225,7 @@ try {
                     <select name="sort" onchange="this.form.submit()" class="usr-native-refinement-select">
                         <option value="newest" <?php echo $sort_selection === 'newest' ? 'selected' : ''; ?>>Sort by: Newest</option>
                         <option value="oldest" <?php echo $sort_selection === 'oldest' ? 'selected' : ''; ?>>Sort by: Oldest</option>
-                        <option value="alphabetical" <?php echo $sort_selection === 'alphabetical' ? 'selected' : ''; ?>>Sort by: A-Z</option>
+                        <option value="alphabetical" <?php echo $sort_selection === 'alphabetical' ? 'selected' : ''; ?>>Sort by: Username</option>
                     </select>
                 </div>
 
