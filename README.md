@@ -30,5 +30,5 @@ Before running this code, ensure you have the following installed:
 ### 4. Database setup
 * The database is defined as follows in dbcmds.txt. More details in upcoming documentation.
 
-### 5. Run "localhost/lms-project/public"
+### 5. Run "localhost/lms-project/public" in browser
 MTBD
