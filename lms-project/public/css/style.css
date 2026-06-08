@@ -21,6 +21,7 @@ body {
     --gold-accent: #EAD49A;
     --dark-text: #1C1B1A;
     --white-border: #FFFFFF;
+    --crimson-accent: #9E1B32;
 }
 
 /* ==========================================================================
@@ -2849,6 +2850,7 @@ body {
 .card-indigo     { background-color: #8583be; }
 .card-gold       { background-color: #ebd39c; }
 .card-green      { background-color: #8cd19d; }
+.card-crimson    { background-color: #ff3b30; }
 
 /* Labels Pinned to Lower Left Margins */
 .manage-card-label {
@@ -2883,6 +2885,10 @@ body {
 
 .card-green:hover {
     box-shadow: 0 12px 30px rgba(140, 209, 157, 0.65), 0 0 15px rgba(140, 209, 157, 0.4);
+}
+
+.card-crimson:hover {
+    box-shadow: 0 12px 30px rgba(221, 156, 127, 0.65), 0 0 15px rgba(221, 156, 127, 0.4);
 }
 
 /* ==========================================================================

@@ -1,48 +1,3 @@
-<?php
-// Ensure session safety if not already initialized globally
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-/**
- * STRICT AUTHENTICATION STATE VERIFICATION (Zero Simulation Fallbacks)
- * Using !empty() ensures that if $_SESSION['user_id'] is null, 0, false,
- * or an empty string, it correctly and safely evaluates to false.
- */
-$is_logged_in = (!empty($_SESSION['user_id']) && isset($_SESSION['role']));
-
-/* ==========================================================================
-   AUTHENTICATION ROUTE GUARD (Prevents Logged-In Access to Login/Register)
-   ========================================================================== */
-if ($is_logged_in) {
-    $current_page = basename($_SERVER['SCRIPT_NAME']);
-    if ($current_page === 'login.php' || $current_page === 'register.php') {
-        echo "<script>
-            alert('Already logged in. Please log out for these actions.');
-            window.location.href = 'profile.php';
-        </script>";
-        exit(); // Stop parsing the rest of the unauthorized file
-    }
-}
-
-/* ==========================================================================
-   DYNAMIC BASE URL ANCHOR (Senior Dev Path Trapping Protection)
-   ========================================================================== */
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-$host = $_SERVER['HTTP_HOST'];
-$current_script_dir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-
-// Look for the main public folder boundary to establish an absolute base URL route
-$public_folder_position = strpos($current_script_dir, '/public');
-if ($public_folder_position !== false) {
-    // Truncates paths right at the public container directory
-    $clean_root_dir = substr($current_script_dir, 0, $public_folder_position + 7);
-} else {
-    $clean_root_dir = $current_script_dir;
-}
-
-$base_url = rtrim($protocol . $host . $clean_root_dir, '/');
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,7 +16,7 @@ $base_url = rtrim($protocol . $host . $clean_root_dir, '/');
 
     <header class="main-header">
         <div class="header-top">
-            <a href="<?php echo $base_url; ?>/index.php" class="logo-area">
+            <a href="<?php echo $base_url; ?>/index.php?page=home" class="logo-area">
                 <div class="logo-placeholder">
                     <img src="imgs/MMC_logo.png" alt="MMC Logo">
                 </div>
@@ -69,13 +24,14 @@ $base_url = rtrim($protocol . $host . $clean_root_dir, '/');
             </a>
 
             <nav class="main-nav">
-                <a href="<?php echo $base_url; ?>/index.php" class="nav-link">Home</a>
-                <a href="<?php echo $base_url; ?>/about.php" class="nav-link">About</a>
-                <a href="<?php echo $base_url; ?>/contact.php" class="nav-link">Contact</a>
+                <a href="<?php echo $base_url; ?>/index.php?page=home" class="nav-link">Home</a>
+                <a href="<?php echo $base_url; ?>/index.php?page=about" class="nav-link">About</a>
+                <a href="<?php echo $base_url; ?>/index.php?page=contact" class="nav-link">Contact</a>
             </nav>
 
             <div class="search-bar-container">
-                <form action="<?php echo $base_url; ?>/search.php" method="GET" class="search-form">
+                <form action="<?php echo $base_url; ?>/index.php" method="GET" class="search-form">
+                    <input type="hidden" name="page" value="search">
                     <input type="text" name="search" placeholder="Search title or author..." aria-label="Search">
                     <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
                 </form>
@@ -85,17 +41,17 @@ $base_url = rtrim($protocol . $host . $clean_root_dir, '/');
         <div class="header-sub-nav">
             <?php if (!$is_logged_in): ?>
                 <div class="auth-actions state-logged-out">
-                    <a href="<?php echo $base_url; ?>/login.php" class="auth-link">Login/Register</a>
+                    <a href="<?php echo $base_url; ?>/index.php?page=login" class="auth-link">Login/Register</a>
                 </div>
             <?php else: ?>
                 <div class="auth-actions state-logged-in">
                     <div class="user-menu-left">
-                        <a href="<?php echo $base_url; ?>/profile.php" class="auth-link">Profile</a>
-                        <a href="<?php echo $base_url; ?>/settings.php" class="auth-link">Settings</a>
-                        <a href="<?php echo $base_url; ?>/management.php" class="auth-link">Manage</a>
+                        <a href="<?php echo $base_url; ?>/index.php?page=profile" class="auth-link">Profile</a>
+                        <a href="<?php echo $base_url; ?>/index.php?page=settings" class="auth-link">Settings</a>
+                        <a href="<?php echo $base_url; ?>/index.php?page=management" class="auth-link">Manage</a>
                     </div>
                     <div class="user-menu-right">
-                        <a href="<?php echo $base_url; ?>/success.php?action=logout" class="auth-link logout-trigger">Logout</a>
+                        <a href="<?php echo $base_url; ?>/index.php?page=logout" class="auth-link logout-trigger">Logout</a>
                     </div>
                 </div>
             <?php endif; ?>
