@@ -27,7 +27,7 @@ Before running this code, ensure you have the following installed:
 * Start the **MySQL** module.
 
 ### 4. Database setup
-* The database "lms_project" is defined as follows in [dbcmds.txt](https://drive.google.com/drive/folders/1xOPmIpEk7q1SsJUK-mQv1GgCrCL_n_Ox). It can be defined in XAMPP as well, via the admin button.
+* The database "lms_project" is defined as follows in [dbcmds.txt](https://drive.google.com/drive/folders/1xOPmIpEk7q1SsJUK-mQv1GgCrCL_n_Ox). It can be defined in XAMPP as well, via the admin button or "localhost/phpmyadmin/".
 
 ### 5. Run "localhost/lms-project/public" in browser
 
