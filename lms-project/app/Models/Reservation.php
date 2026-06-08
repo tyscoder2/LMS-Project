@@ -34,10 +34,11 @@ class Reservation {
 
     /**
      * Gather a filtered collection of reservations based on authorization and context rules.
+     * UPDATED: Added b.cover_image to the query selections block.
      */
     public function getAllReservations(int $user_id, bool $is_staff, string $search_query, string $sort_selection, bool $filter_id, bool $filter_title, bool $filter_username) {
         $select_fields = "r.id AS reservation_id, r.reserved_date, r.status,
-                          b.title AS book_title, b.author AS book_author, b.isbn,
+                          b.title AS book_title, b.author AS book_author, b.isbn, b.cover_image,
                           u.username, u.id AS user_uuid, br.name AS borrower_name";
 
         $sql = "SELECT $select_fields FROM reservations r
