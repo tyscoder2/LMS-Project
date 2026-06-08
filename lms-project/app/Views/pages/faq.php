@@ -17,7 +17,7 @@
                 </button>
                 <div class="accordion-panel">
                     <div class="panel-content-inner">
-                        <p>To borrow a book, simply search for the title using our LMS search tool, check its availability status, and click "Reserve". Bring your valid MMC Student ID card to the physical library desk within 24 hours to finalize checkout with our library staff.</p>
+                        <p>To borrow a book, simply use the search bar at the top right, check its availability status, and click "borrow". You must have an account and be logged in. Once borrowed, show your valid Student ID to the physical library desk to finalize checkout with our library staff.</p>
                     </div>
                 </div>
             </div>
@@ -29,7 +29,7 @@
                 </button>
                 <div class="accordion-panel">
                     <div class="panel-content-inner">
-                        <p>Yes, donations are highly appreciated! MMC Library accepts academic textbooks, reference materials, historical accounts, and literary works. Please reach out via our Contact page to schedule a donation evaluation drop-off.</p>
+                        <p>Yes, donations are highly appreciated! MMC Library accepts academic textbooks, reference materials, historical accounts, and literary works. Feel free to approach our physical desk or reach out to us via our Contact page.</p>
                     </div>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                 </button>
                 <div class="accordion-panel">
                     <div class="panel-content-inner">
-                        <p>Yes! Registered students who are logged into the LMS can place active holds on books that are currently loaned out by other readers. You will receive an automated system dashboard update when the material is returned and held for your collection.</p>
+                        <p>Yes! Registered students who are logged into the LMS can place active holds on books that are currently loaned out by other readers.</p>
                     </div>
                 </div>
             </div>
@@ -65,7 +65,7 @@
                 </button>
                 <div class="accordion-panel">
                     <div class="panel-content-inner">
-                        <p>If our catalog does not currently have a textbook or research paper necessary for your curriculum studies, you can file a material procurement request through your profile interface or contact the library committee for sourcing consideration.</p>
+                        <p>If our catalog does not currently have a textbook or research paper necessary for your curriculum studies, you can request this via our Contact page or at our physical desk.</p>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@
                 </button>
                 <div class="accordion-panel">
                     <div class="panel-content-inner">
-                        <p>Loan extensions can be executed once through your user dashboard under "Active Borrows" prior to the return due date, provided that no other student has placed a priority hold on that specific piece of inventory.</p>
+                        <p>Loan extensions can be offered provided you have a valid reason. Valid reasons include emergencies, holidays, and others.</p>
                     </div>
                 </div>
             </div>

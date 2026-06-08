@@ -43,10 +43,10 @@
                         <div class="form-control-group custom-select-arrow">
                             <select name="subject_choice" required>
                                 <option value="default" disabled <?php echo empty($subject_opt) ? 'selected' : ''; ?>>What is your message about?</option>
-                                <option value="Borrowing Materials Inquiry" <?php echo ($subject_opt === "Borrowing Materials Inquiry") ? 'selected' : ''; ?>>Borrowing Materials Inquiry</option>
-                                <option value="Account and Logins issue" <?php echo ($subject_opt === "Account and Logins issue") ? 'selected' : ''; ?>>Account and Logins issue</option>
-                                <option value="Book / Research Donation" <?php echo ($subject_opt === "Book / Research Donation") ? 'selected' : ''; ?>>Book / Research Donation</option>
-                                <option value="General Technical Question" <?php echo ($subject_opt === "General Technical Question") ? 'selected' : ''; ?>>General Technical Question</option>
+                                <option value="Query" <?php echo ($subject_opt === "Query") ? 'selected' : ''; ?>>Query</option>
+                                <option value="Suggestion" <?php echo ($subject_opt === "Suggestion") ? 'selected' : ''; ?>>Suggestion</option>
+                                <option value="Report" <?php echo ($subject_opt === "Report") ? 'selected' : ''; ?>>Report</option>
+                                <option value="Other" <?php echo ($subject_opt === "Other") ? 'selected' : ''; ?>>Other</option>
                             </select>
                         </div>
                     </div>

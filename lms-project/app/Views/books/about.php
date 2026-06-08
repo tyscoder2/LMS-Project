@@ -51,7 +51,7 @@
         <div class="grid-text-column">
             <h2 class="section-heading">CONTACT</h2>
             <p>Have more questions? Have a query that is not in our <a href="faq.php" class="inline-link">FAQ</a>?</p>
-            <a href="contact.php" class="contact-link-btn">Contact us!</a>
+            <a href="index.php?page=contact" class="contact-link-btn">Contact us!</a>
         </div>
         <div class="grid-image-column">
             <img src="imgs/MMC_contact_banner.jpg" alt="LMS Support Helpdesk Area">
