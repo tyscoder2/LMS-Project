@@ -31,4 +31,4 @@ Before running this code, ensure you have the following installed:
 
 ### 5. Run "localhost/lms-project/public" in browser
 
-For more details, [documentation is available](https://drive.google.com/drive/folders/1xOPmIpEk7q1SsJUK-mQv1GgCrCL_n_Ox).
+For more details, [documentation is available]([https://drive.google.com/drive/folders/1xOPmIpEk7q1SsJUK-mQv1GgCrCL_n_Ox](https://docs.google.com/document/d/1qk2ULTqB9REgOAvDxki_M_RNxnNs-fsM/edit)).
